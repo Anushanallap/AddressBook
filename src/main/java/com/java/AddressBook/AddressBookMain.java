@@ -10,14 +10,16 @@ import java.util.*;
 import java.util.Map.Entry;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import java.util.csv;
 
+import com.google.gson.Gson;
+import com.opencsv.CSVReader;
+import com.opencsv.CSVWriter;
 
 import java.util.Map.Entry;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-public class AddressBook {
+class AddressBook {
 
 	public enum IOService {
 		CONSOLE_IO, FILE_IO, DB_IO, REST_IO
@@ -25,6 +27,7 @@ public class AddressBook {
 
 	static ArrayList<Address> arr_list = new ArrayList<>();
 	Scanner sc = new Scanner(System.in);
+	private ArrayList<Address> data;
 
 	public void AddPreson() {
 
@@ -51,17 +54,6 @@ public class AddressBook {
 		for (Address add : arr_list) {
 			add.display();
 		}
-
-		try {
-			addtofile(arr_list);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-
-	private void addtofile(ArrayList<Address> arr_list2) {
-		// TODO Auto-generated method stub
-		
 	}
 
 	public void EditPerson(String name, String name1) {
@@ -105,7 +97,7 @@ public class AddressBook {
 		HashMap<Integer, String> hash = new HashMap<>();
 		HashMap<Integer, String> hash1 = new HashMap<>();
 
-		String choice, city, pname;
+		String choice, city, personname;
 		System.out.println(
 				"search \n 1)choose City  (press 1) \n 2)Press city or state  (press 2) : \n 3)Enter the city name (press 3) \n 4)Press 4 sort by name : \n 5)Sort by state pres 5 :\n 6)(press 6)Person contact details are :");
 		choice = sc.next();
@@ -113,9 +105,9 @@ public class AddressBook {
 
 		case "1":
 			System.out.println("Enter the person first name and last name without space ");
-			pname = sc.next();
-			List<Object> list = arr_list.stream()
-					.filter(person_name -> person_name.First_name.concat(person_name.Last_name).equals(pname))
+			personname = sc.next();
+			List<Address> list = arr_list.stream()
+					.filter(person_name -> person_name.First_name.concat(person_name.Last_name).equals(personname))
 					.collect(Collectors.toList());
 			for (Address addr : list) {
 				System.out.println("Name of the city is : " + addr.city);
@@ -154,14 +146,7 @@ public class AddressBook {
 			sortedzip.forEach(System.out::println);
 			break;
 
-		case "6":
-			try {
-				diplayData();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			break;
+		
 		default:
 			System.out.println("Invalid user input please enter valid");
 			break;
@@ -169,48 +154,28 @@ public class AddressBook {
 
 	}
 
-	public void  addtofile(ArrayList<Address> emplist)  {
-		FileWriter filewriter = new FileWriter("C:\\Users\\Dell\\AddressBook\data.txt");
-		for (Address str : emplist) {
-			filewriter.write(str + System.lineSeparator());
-		}
-
-		filewriter.close();
-	}
-
-	public static void displayData() throws IOException {
-		Files.lines(new File("C:\\Users\\Dell\\eclipse-workspace\\AddressBook\\src\\main\\java\\com\\java\\AddressBook").toPath())
-				.forEach(System.out::println);
-	}
-
-	public void writecsvdatafile(String filename) {
+	public void writedataAtOnce() {
+		File file = new File("c:\\users\\Dell\\eclipse-workspace\\txtfile.csv");
 
 		try {
-			FileWriter outputfile = new FileWriter("C:\\Users\\Dell\\CSVFiles\\" + filename);
+			FileWriter outputfile = new FileWriter( file);
 			CSVWriter writer = new CSVWriter(outputfile);
-			ArrayList<String[]> csvdata = new ArrayList<>();
-			csvdata.add(
-					new String[] { "First_name", "Last_name", "address", "phoneNum", "zip", "city", "state", "email" });
-			for (Address address : arr_list) {
-				csvdata.add(new String[] { address.getFirst_name(), address.getLast_name(), address.getAddress(),
-						address.getPhoneNum(), address.getZip(), address.getCity(), address.getState(),
-						address.getEmail() });
-			}
-			writer.writeAll(csvdata);
-
-			// closing writer connection
+			List<String[]> data = new ArrayList<String[]>();
+					 data.add(new String[] { "Name", "Class", "Marks" });
+				        data.add(new String[] { "Aman", "10", "620" });
+				        data.add(new String[] { "Suraj", "10", "630" });
+			writer.writeAll(data);
 			writer.close();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
+		} catch (IOException e) {			
 			e.printStackTrace();
 		}
 
 	}
 
-	public static void readDataLineByLine(String file) {
+	public static void readDataLineByLine() {
 
 		try {
-			FileReader filereader = new FileReader("C:\\Users\\Dell"+ "\\CSVFiles\\" + file);
+			FileReader filereader = new FileReader("c:\\\\users\\\\Dell\\\\eclipse-workspace\\\\txtfile.csv" );
 			CSVReader csvReader = new CSVReader(filereader);
 			String[] nextRecord;
 
@@ -226,11 +191,11 @@ public class AddressBook {
 		}
 	}
 
-	public void writejsondatafile(String filename) {
+	public void writejsondatafile() {
 
 		try {
 			// creating a writer
-			Writer writer = new FileWriter("C:\\Users\\Dell\\JSONFiles\\"+filename);
+			Writer writer = new FileWriter("c:\\users\\Dell\\eclipse-workspace\\txtfile.Gson");
 			new Gson().toJson(arr_list, writer);
 			System.out.println("Done");
 			writer.close();
@@ -241,12 +206,12 @@ public class AddressBook {
 	}
 
 	
-	public void readjsondatafile(String filename) {
+	public void readjsondatafile() {
 
 		Gson gson = new Gson();		
 		try {
 			
-			Address[] jsondata = gson.fromJson(new FileReader("C:\\Users\\Dell\\JSONFiles\\" + filename), Address[].class);
+			Address[] jsondata = gson.fromJson(new FileReader("c:\\users\\Dell\\eclipse-workspace\\txtfile.Gson"), Address[].class);
 
 			System.out.println(gson.toJson(jsondata));
 		} catch (IOException e) {
@@ -255,6 +220,7 @@ public class AddressBook {
 	}
 
 }
+
 
 class AddressHashMap {
 	HashMap<String, Address> map = new HashMap<>();
@@ -299,32 +265,33 @@ class AddressHashMap {
 			System.out.println("Key: " + map1 + " Value: " + map.get(map1));
 		}
 
+	}
+}
 
-
-class AddressBook {
+public class AddressBookMain {
 
 	public static void main(String[] args) {
 //
-//		 Address s1 = new Address("Anusha", "Nallapu", "Khammam near ROTARY nagar",
+	//	 Address s1  = new Address("Anusha", "Nallapu", "Khammam near ROTARY nagar",
 //		 "9658214314", "507001",
 //		 "khammam", "Telangana", "anusha.n468@gmail.com");
 
 		// s1.display();
 //
-		Addressbook1 ad = new Addressbook1();
-//		ad.AddPreson();
-//		ad.AddPreson();
-//		ad.EditePeson("Anusha", "anusha");
-//		ad.DeletePerson("Anusha");s
+	AddressBook address = new AddressBook();
+//		address.AddPreson();
+//		address.AddPreson();
+//		address.EditePeson("Anusha", "anusha");
+//		address.DeletePerson("Anusha");
 
-//		ad.Multipleperson(); // UC5
-		// ad.searchcity();
+		address.Multipleperson(); // UC5
+		// address.searchcity();
 //		AddressHashMap add = new AddressHashMap();
-//		ad.AddressHashmap();
-		// ad.writecsvdatafile("AddressBookData.csv");
-		//ad.readDataLineByLine("AddressBookData.csv");
-		//ad.writejsondatafile("userdata.json");
-		ad.readjsondatafile("userdata.json");
+//		address.AddressHashmap();
+		//address.writedataAtOnce();
+		//address.readDataLineByLine();
+		//address.writejsondatafile();
+		//address.readjsondatafile();
 		
 	}
 
